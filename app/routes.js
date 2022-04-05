@@ -10,15 +10,11 @@ module.exports = app => {
         reconnectPeriod: 1000,
         connectTimeout: 30 * 1000,
         rejectUnauthorized: false,
-        username: 'admin',
-        password: 'PTSKA123!',
     };
 
-    // const url = "ws://36.94.223.75:9001/ws";
     const url = 'ws://192.168.27.71:8080/mqtt';
     const client = mqtt.connect(url, options);
     
-    // const topic = 'powermeter/Power1';
     const topic = "rain"
 
     client.on('connect', () => {
