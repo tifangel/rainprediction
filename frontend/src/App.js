@@ -1,11 +1,13 @@
 import "@material-tailwind/react/tailwind.css";
 import './App.css';
-import CardTest from './components/CardTest';
+import CardGraph from "./components/CardGraph";
+import Numbers from "./components/Numbers";
 
 function App() {
   return (
     <div className="App">
-      <CardTest />
+      <Numbers />
+      <CardGraph />
     </div>
   );
 }
