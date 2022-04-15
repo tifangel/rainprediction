@@ -1,31 +1,24 @@
-import { FormControl, InputLabel, MenuItem, Select, Typography } from "@material-ui/core";
-import React, { useState } from "react";
-import CardNumber from "./CardNumber";
+import { Typography } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 
-export default function Header() {
-    const [city, setCity] = useState('Bandung');
+const months = [ 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
 
-    const handleCityChange = (event) => {
-        setCity(event.target.value);
+export default function Header(props) {
+    const { city } = props;
+    const [currentTime, setCurrentTime] = useState('')
+
+    const createDateString = () => {
+        var newDate = new Date();
+        return `${newDate.getDate()} ${months[newDate.getMonth()]} ${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()} WIB`
     }
 
-    const renderDropdown = () => {
-        return (
-            <FormControl>
-                <InputLabel id="city-label">Ganti Kota</InputLabel>
-                <Select
-                    id="city"
-                    label="city"
-                    value={city}
-                    onChange={handleCityChange}
-                >
-                    <MenuItem value="Bandung">Bandung</MenuItem>
-                    <MenuItem value="Jakarta">Jakarta</MenuItem>
-                    <MenuItem value="Malang">Malang</MenuItem>
-                </Select>
-            </FormControl>
-        )
-    }
+    useEffect(() => {
+        setCurrentTime(createDateString())
+    }, [])
+
+    useEffect(() => {
+        setInterval(() => setCurrentTime(createDateString()), 15000)
+    }, [])
 
     return (
         <div className="flex flex-col mb-12 justify-center items-center">
@@ -33,7 +26,7 @@ export default function Header() {
                     {city}
                 </Typography>
                 <Typography variant="overline">
-                    15 April 2021 15:59 WIB
+                    {currentTime}
                 </Typography>
         </div>
     );
