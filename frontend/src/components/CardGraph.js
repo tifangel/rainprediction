@@ -1,46 +1,33 @@
 import React from "react";
-import Card from "@material-tailwind/react/Card";
-import CardRow from "@material-tailwind/react/CardRow";
-import CardHeader from "@material-tailwind/react/CardHeader";
-import CardStatus from "@material-tailwind/react/CardStatus";
-import CardStatusFooter from "@material-tailwind/react/CardStatusFooter";
-import Icon from "@material-tailwind/react/Icon";
 import GraphTest from "./GraphTest";
-import { CardBody } from "@material-tailwind/react";
+import { Grid, Paper, Typography } from "@material-ui/core";
 
 export default function CardGraph() {
     return (
-        <Card>
-            <CardRow>
-                <CardHeader color="lightBlue" size="sm" iconOnly>
-                    <Icon name="air" size="4xl" color="white" />
-                    {/* <h4>Tekanan Udara</h4> */}
-                </CardHeader>
-                <CardBody>
-                    <GraphTest />
-                </CardBody>
-                <CardStatus title="Tekanan Udara (kPa)" />
-            </CardRow>
+        <Paper className="p-6">
+            <Grid container spacing={5}>
 
-            <CardRow>
-                <CardHeader color="lightBlue" size="sm" iconOnly>
-                    <Icon name="water_drop" size="4xl" color="white" />
-                </CardHeader>
-                <CardBody>
+                <Grid item xs={12}>
+                    <Typography variant="overline" display="block">
+                        Tekanan Udara (kPa)
+                    </Typography>
                     <GraphTest />
-                </CardBody>
-                <CardStatus title="Kelembaban (%)" />
-            </CardRow>
+                </Grid>
 
-            <CardRow>
-                <CardHeader color="lightBlue" size="sm" iconOnly>
-                    <Icon name="thermostat" size="4xl" color="white" />
-                </CardHeader>
-                <CardBody>
+                <Grid item xs={12}>
+                    <Typography variant="overline" display="block">
+                        Kelembaban (%)
+                    </Typography>
                     <GraphTest />
-                </CardBody>
-                <CardStatus title="Suhu (°C)" />
-            </CardRow>
-        </Card>
-    );
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Typography variant="overline" display="block">
+                        Suhu (°C)
+                    </Typography>
+                    <GraphTest />
+                </Grid>
+            </Grid>
+        </Paper>
+    )
 }

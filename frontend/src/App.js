@@ -1,12 +1,13 @@
-import "@material-tailwind/react/tailwind.css";
 import './App.css';
 import CardGraph from "./components/CardGraph";
-import Numbers from "./components/Numbers";
+import Controls from './components/Controls';
+import Header from "./components/Header";
 
 function App() {
   return (
     <div className="App">
-      <Numbers />
+      <Header />
+      <Controls />
       <CardGraph />
     </div>
   );

@@ -1,35 +1,19 @@
 import React from "react";
-import Card from "@material-tailwind/react/Card";
-import CardRow from "@material-tailwind/react/CardRow";
-import CardHeader from "@material-tailwind/react/CardHeader";
-import CardStatus from "@material-tailwind/react/CardStatus";
-import CardStatusFooter from "@material-tailwind/react/CardStatusFooter";
-import Icon from "@material-tailwind/react/Icon";
+import { Paper, Typography } from "@material-ui/core";
 
-export default function CardNumber() {
+export default function CardNumber(props) {
+    var { label, value } = props;
+
     return (
-        <div>
-            <Card>
-                <CardRow>
-                    <CardHeader color="lightBlue" size="sm" iconOnly>
-                        <Icon name="groups" size="4xl" color="white" />
-                    </CardHeader>
-
-                    <CardStatus title="Min" amount="30" />
-                </CardRow>
-            </Card>
-
-            {/* <Card>
-                <CardRow>
-                    <CardStatus title="Max" amount="50" />
-                </CardRow>
-            </Card>
-
-            <Card>
-                <CardRow>
-                    <CardStatus title="Avg" amount="75" />
-                </CardRow>
-            </Card>         */}
-        </div>
+        <Paper className="flex flex-col justify-center align-center px-4 py-2">
+            <div className="-mb-2">
+                <Typography variant="overline" align="center" display="block">
+                    {label}
+                </Typography>
+            </div>
+            <Typography variant="h5" align="center">
+                {value}
+            </Typography>
+        </Paper>
     );
 }
