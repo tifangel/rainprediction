@@ -9,7 +9,7 @@ export default function Header(props) {
 
     const createDateString = () => {
         var newDate = new Date();
-        return `${newDate.getDate()} ${months[newDate.getMonth()]} ${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()} WIB`
+        return `${newDate.getDate()} ${months[newDate.getMonth()]} ${newDate.getFullYear()} ${newDate.getHours()}:${String(newDate.getMinutes()).padStart(2, '0')} WIB`
     }
 
     useEffect(() => {
