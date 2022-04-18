@@ -3,13 +3,8 @@ import React, { useState } from "react";
 import CardNumber from "./CardNumber";
 import Header from "./Header";
 
-export default function Controls() {
-    const [city, setCity] = useState('Bandung');
+export default function Controls({city, handleCityChange, data}) {
     const [roofStatus, setRoofStatus] = useState("close")
-
-    const handleCityChange = (event) => {
-        setCity(event.target.value);
-    }
 
     const handleRoofChange = (event) => {
         setRoofStatus(event.target.value);
@@ -27,9 +22,9 @@ export default function Controls() {
                         value={city}
                         onChange={handleCityChange}
                     >
-                        <MenuItem value="Bandung">Bandung</MenuItem>
-                        <MenuItem value="Jakarta">Jakarta</MenuItem>
-                        <MenuItem value="Malang">Malang</MenuItem>
+                        <MenuItem value="bandung">Bandung</MenuItem>
+                        <MenuItem value="jakarta">Jakarta</MenuItem>
+                        <MenuItem value="malang">Malang</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -50,11 +45,11 @@ export default function Controls() {
             <div className="flex mb-4 gap-4 justify-between items-center sm:flex-col md:flex-col lg:flex-row">
                 { renderForm() }
                 <div className="flex items-center gap-4">
-                    <CardNumber label="Tekanan Udara (kPa)" value="91.5" />
-                    <CardNumber label="Kelembaban (%)" value="67" />
-                    <CardNumber label="Suhu (°C)" value="24" />
-                    <CardNumber label="Sedang Hujan?" value="Ya" />
-                    <CardNumber label="Nanti Hujan?" value="Tidak" />
+                    <CardNumber label="Tekanan Udara (kPa)" value={data?.pressure} />
+                    <CardNumber label="Kelembaban (%)" value={data?.humidity} />
+                    <CardNumber label="Suhu (°C)" value={data?.temperature} />
+                    <CardNumber label="Sedang Hujan?" value={data?.israin} />
+                    <CardNumber label="Nanti Hujan?" value={data?.prediction} />
                 </div>
             </div>
         </>

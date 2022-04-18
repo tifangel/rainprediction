@@ -1,6 +1,7 @@
 const mongoose = require("./db-mongoose");
 
 const PayloadSchema = new mongoose.Schema({
+    date: {type: String, required: true},
     humidity: {type: Number, required: true},
     temperature: {type: Number, required: true},
     pressure: {type: Number, required: true},

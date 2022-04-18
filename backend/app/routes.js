@@ -12,7 +12,7 @@ module.exports = app => {
         rejectUnauthorized: false,
     };
 
-    const url = 'ws://192.168.27.71:8080/mqtt';
+    const url = 'ws://192.168.217.71:8080/mqtt';
     const client = mqtt.connect(url, options);
     
     const topic = "rain"
@@ -48,6 +48,6 @@ module.exports = app => {
         console.log('Reconnecting');
     });
   
-    app.get("/get-data", record.getAll);
+    app.get("/get-data/:city", record.getAll);
     app.post("/add-data", record.insertData); 
 };
