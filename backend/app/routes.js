@@ -50,6 +50,12 @@ module.exports = app => {
   
     app.get("/get-data/:city", record.getAll);
     app.post("/add-data", record.insertData);
-    app.put("/update-status-roof/:city", record.updateStatusRoof); 
+    app.put("/update-status-roof/:city", async(req, res) => {
+        await record.updateStatusRoof(req, res, () => {
+            client.publish('root', JSON.stringify({
+                message: req.body.status
+            }));
+        })
+    }); 
     app.get("/get-status-roof/:city", record.getStatusRoof); 
 };
