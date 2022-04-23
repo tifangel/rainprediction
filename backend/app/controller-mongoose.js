@@ -18,7 +18,7 @@ exports.getAll = (req,res) =>  {
                 })
                     .then(response => {
                         if (response?.data?.statusCode === 200) {
-                            prediction = response?.data?.body ? 1 : 0;
+                            prediction = response?.data?.body ? 0 : 1;
                         }
                         res.status(200).send({data: result, prediction: prediction, success: true, message: "Berhasil mengambil data"});
                     })

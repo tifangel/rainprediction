@@ -7,7 +7,7 @@ import Controls from './components/Controls';
 const App = () => {
 
   const [city, setCity] = useState('bandung');
-  const [dataAvg, setDataAvg] = useState({
+  const [datalast, setDatalast] = useState({
     pressure: 0,
     humidity: 0,
     temperature: 0,
@@ -32,49 +32,41 @@ const App = () => {
       return data;
     }, {
       onSuccess: (data) => {
-        console.log(data);
-        if (data?.data?.length > 0) {
-          const dataLength = data?.data?.length;
-          const avgPress = data?.data?.reduce((sum, curr) => sum + Number(curr.pressure), 0) / dataLength;
-          const avgHum = data?.data?.reduce((sum, curr) => sum + Number(curr.humidity), 0) / dataLength;
-          const avgTemp = data?.data?.reduce((sum, curr) => sum + Number(curr.temperature), 0) / dataLength;
+        const dataLength = data?.data?.length;
+        if (dataLength > 0) {
+          const lastData = data?.data[dataLength - 1];
           
-          setDataAvg({
-            pressure: avgPress,
-            humidity: avgHum,
-            temperature: avgTemp,
-            israin: data?.data[dataLength - 1]?.rainDigital === 0 ? 'Ya' : 'Tidak',
-            prediction: data?.prediction === 1 ? 'Ya' : 'Tidak'
+          setDatalast({
+            pressure: lastData?.pressure,
+            humidity: lastData?.humidity,
+            temperature: lastData?.temperature,
+            israin: lastData?.rainDigital === 0 ? 'Ya' : 'Tidak',
+            prediction: data?.prediction === 0 ? 'Ya' : 'Tidak'
           });
-  
-          const data_press = data?.data?.map((element, index) => {
-            const item = {
+
+          const data_press = [];
+          const data_hum = [];
+          const data_temp = [];
+          data?.data?.forEach((element, index) => {
+            data_press.push({
                 name: element.date,
                 pv: element.pressure,
-            }
-            return item
+            });
+            data_hum.push({
+              name: element.date,
+              pv: element.humidity,
+            });
+            data_temp.push({
+              name: element.date,
+              pv: element.temperature,
+            });
           });
           setDataPress(data_press);
-    
-          const data_hum = data?.data?.map((element, index) => {
-            const item = {
-                name: element.date,
-                pv: element.humidity,
-            }
-            return item
-          });
           setDataHum(data_hum);
-    
-          const data_temp = data?.data?.map((element, index) => {
-            const item = {
-                name: element.date,
-                pv: element.temperature,
-            }
-            return item
-          });
           setDataTemp(data_temp);
+
         } else {
-          setDataAvg({
+          setDatalast({
             pressure: 0,
             humidity: 0,
             temperature: 0,
@@ -91,7 +83,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <Controls city={city} handleCityChange={handleCityChange} data={dataAvg}/>
+      <Controls city={city} handleCityChange={handleCityChange} data={datalast}/>
       <CardGraph dataPress={dataPress} dataHum={dataHum} dataTemp={dataTemp} />
     </div>
   );
