@@ -12,7 +12,8 @@ const App = () => {
     humidity: 0,
     temperature: 0,
     israin: '-',
-    prediction: '-'
+    prediction: '-',
+    status: 'open'
   });
 
   const [dataPress, setDataPress] = useState([]);
@@ -32,7 +33,9 @@ const App = () => {
       return data;
     }, {
       onSuccess: (data) => {
+        console.log(data);
         const dataLength = data?.data?.length;
+        const statusroof = data?.statusroof === 0 ? 'close' : 'open';
         if (dataLength > 0) {
           const lastData = data?.data[dataLength - 1];
           
@@ -41,7 +44,8 @@ const App = () => {
             humidity: lastData?.humidity,
             temperature: lastData?.temperature,
             israin: lastData?.rainDigital === 0 ? 'Ya' : 'Tidak',
-            prediction: data?.prediction === 0 ? 'Ya' : 'Tidak'
+            prediction: data?.prediction === -1 ? '-' : data?.prediction === 0 ? 'Ya' : 'Tidak',
+            status: statusroof,
           });
 
           const data_press = [];
@@ -71,7 +75,8 @@ const App = () => {
             humidity: 0,
             temperature: 0,
             israin: '-',
-            prediction: '-'
+            prediction: '-',
+            status: statusroof,
           });
           setDataPress([]);
           setDataHum([]);

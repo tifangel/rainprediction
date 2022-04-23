@@ -1,4 +1,5 @@
 const Payload = require('./model-mongoose');
+const Roof = require('./model-roof');
 const axios = require('axios');
 
 exports.getAll = (req,res) =>  {
@@ -7,10 +8,9 @@ exports.getAll = (req,res) =>  {
             console.log(err);
             res.status(500).send({success: false, message: "Gagal mengambil data"});
         }else {
-            var prediction = 0;
+            var prediction = -1;
             if (result.length > 0) {
                 const lastData = result[result.length - 1];
-                console.log(lastData);
                 axios.post('https://yuywl1w5o6.execute-api.ap-southeast-1.amazonaws.com/v1/predict', {
                     temperature: lastData.temperature, 
                     humidity: lastData.humidity, 
@@ -19,16 +19,19 @@ exports.getAll = (req,res) =>  {
                     .then(response => {
                         if (response?.data?.statusCode === 200) {
                             prediction = response?.data?.body ? 0 : 1;
-                        }
-                        res.status(200).send({data: result, prediction: prediction, success: true, message: "Berhasil mengambil data"});
+                        } 
                     })
                     .catch(error => {
                         console.log(error);
-                        res.status(500).send({success: false, message: "Gagal mengambil data"});
                     });
-            } else{
-                res.status(200).send({data: result, prediction: prediction, success: true, message: "Berhasil mengambil data"});
             }
+            Roof.findOne({ city: req.params.city }, function(err, resultRoof){
+                if(!err) {
+                    res.status(200).send({data: result, prediction: prediction, statusroof: resultRoof.status, success: true, message: "Berhasil mengambil data"});
+                } else {
+                    res.status(200).send({data: result, prediction: prediction, statusroof: -1, success: true, message: "Berhasil mengambil data"});
+                }
+            });
         }
     })
 };
@@ -53,6 +56,31 @@ exports.insertData = async(req,res) => {
     } catch(err) {
         res.status(500).send("Error");
     }
+};
+
+exports.updateStatusRoof = async(req,res) => {
+	try{
+        console.log(req.params);
+        Roof.updateOne({ city: req.params.city }, { status: req.body.status }, function(err, result) {
+            if(err) {
+                res.status(404).send("Update status roof failed");
+            } else {
+                res.status(201).send("Update status roof successful");
+            }
+        });
+    } catch(err) {
+        res.status(500).send("Update status roof failed");
+    }
+};
+
+exports.getStatusRoof = async(req,res) => {
+	Roof.findOne({ city: req.params.city }, function(err, result){
+        if(err) {
+            res.status(500).send({success: false, message: "Gagal mengambil data"});
+        } else {
+            res.status(200).send({data: result, success: true, message: "Berhasil mengambil data"});
+        }
+    });
 };
 
 exports.insertPayload = async(req) => {
