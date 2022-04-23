@@ -1,42 +1,9 @@
 import { FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CardNumber from "./CardNumber";
 import Header from "./Header";
-import { useQuery } from 'react-query';
 
-export default function Controls({city, handleCityChange, data}) {
-    const [roofStatus, setRoofStatus] = useState(data?.status);
-
-    const handleRoofChange = (event) => {
-        setRoofStatus(event.target.value);
-        console.log(`Roof is now ${event.target.value}`)
-    }
-
-    useEffect(() => {
-        setRoofStatus(data?.status);
-        console.log(data.status);
-        console.log(roofStatus);
-    }, [city, data.status, roofStatus]);
-
-    useQuery(
-        ['data_status', roofStatus],
-        async () => {
-          const res = await fetch('http://localhost:8080/update-status-roof/' + city, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status: roofStatus === 'close' ? 0 : 1 }),
-          });
-          const data = await res.json();
-          return data;
-        }, {
-            onSuccess: (data) => {
-                console.log(data);
-                setRoofStatus(data?.status);
-            }
-        }
-    )
+export default function Controls({city, handleCityChange, handleRoofChange, data, roofStatus}) {
 
     const renderForm = () => {
         return (
@@ -57,7 +24,7 @@ export default function Controls({city, handleCityChange, data}) {
 
                 <FormControl component="fieldset">
                     <FormLabel component="legend">Status Rumah</FormLabel>
-                    <RadioGroup row name="status-atap" defaultValue={roofStatus} onChange={handleRoofChange}>
+                    <RadioGroup row name="status-atap" value={roofStatus} onChange={handleRoofChange}>
                         <FormControlLabel value="close" control={<Radio color="primary" />} label="Tertutup" />
                         <FormControlLabel value="open" control={<Radio color="primary" />} label="Terbuka" />
                     </RadioGroup>

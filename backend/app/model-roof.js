@@ -1,7 +1,8 @@
 const mongoose = require("./db-mongoose");
 
 const RoofSchema = new mongoose.Schema({
-    status: {type: Number, required: true},
+    status: {type: String, required: true},
+    city: {type: String, required: true},
 });
 
 //Model -> module.exports

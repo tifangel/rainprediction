@@ -60,12 +60,11 @@ exports.insertData = async(req,res) => {
 
 exports.updateStatusRoof = async(req,res) => {
 	try{
-        console.log(req.params);
         Roof.updateOne({ city: req.params.city }, { status: req.body.status }, function(err, result) {
             if(err) {
-                res.status(404).send("Update status roof failed");
+                res.status(404).send({message: "Update status roof failed"});
             } else {
-                res.status(201).send("Update status roof successful");
+                res.status(201).send({data: result, message: "Update status roof successful"});
             }
         });
     } catch(err) {

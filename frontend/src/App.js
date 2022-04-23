@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import './App.css';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 import CardGraph from "./components/CardGraph";
 import Controls from './components/Controls';
 
 const App = () => {
 
   const [city, setCity] = useState('bandung');
+  const [roofStatus, setRoofStatus] = useState('open');
   const [datalast, setDatalast] = useState({
     pressure: 0,
     humidity: 0,
     temperature: 0,
     israin: '-',
     prediction: '-',
-    status: 'open'
   });
 
   const [dataPress, setDataPress] = useState([]);
@@ -22,7 +22,12 @@ const App = () => {
 
   const handleCityChange = (event) => {
       setCity(event.target.value);
-      console.log(event.target.value);
+  }
+
+  const handleRoofChange = (event) => {
+    setRoofStatus(event.target.value);
+    handleUpdateStatus.mutate(event.target.value);
+    console.log(`Roof is now ${event.target.value}`);
   }
 
   useQuery(
@@ -34,8 +39,8 @@ const App = () => {
     }, {
       onSuccess: (data) => {
         console.log(data);
+        setRoofStatus(data?.statusroof);
         const dataLength = data?.data?.length;
-        const statusroof = data?.statusroof === 0 ? 'close' : 'open';
         if (dataLength > 0) {
           const lastData = data?.data[dataLength - 1];
           
@@ -45,7 +50,6 @@ const App = () => {
             temperature: lastData?.temperature,
             israin: lastData?.rainDigital === 0 ? 'Ya' : 'Tidak',
             prediction: data?.prediction === -1 ? '-' : data?.prediction === 0 ? 'Ya' : 'Tidak',
-            status: statusroof,
           });
 
           const data_press = [];
@@ -76,7 +80,6 @@ const App = () => {
             temperature: 0,
             israin: '-',
             prediction: '-',
-            status: statusroof,
           });
           setDataPress([]);
           setDataHum([]);
@@ -86,9 +89,31 @@ const App = () => {
     }
   );
 
+  const handleUpdateStatus = useMutation(
+    async (status) => {
+      const res = await fetch('http://localhost:8080/update-status-roof/' + city, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: status }),
+      });
+      const data = await res.json();
+      
+      return data;
+    }, {
+        onSuccess: () => {
+            console.log("Berhasil update status atap");
+        },
+        onError: (err) => {
+            console.log("Tidak berhasil update status atap");
+        }
+    }
+  );
+
   return (
     <div className="App">
-      <Controls city={city} handleCityChange={handleCityChange} data={datalast}/>
+      <Controls city={city} handleCityChange={handleCityChange} handleRoofChange={handleRoofChange} data={datalast} roofStatus={roofStatus}/>
       <CardGraph dataPress={dataPress} dataHum={dataHum} dataTemp={dataTemp} />
     </div>
   );
