@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './App.css';
 import { useQuery, useMutation } from 'react-query';
 import CardGraph from "./components/CardGraph";
@@ -29,6 +29,12 @@ const App = () => {
     handleUpdateStatus.mutate(event.target.value);
     console.log(`Roof is now ${event.target.value}`);
   }
+
+  useEffect(() => {
+    if (datalast.prediction === 'Ya' && roofStatus === 'open'){
+      handleUpdateStatus.mutate('close');
+    }
+  }, [datalast.prediction, roofStatus])
 
   useQuery(
     ['data_payload', city],

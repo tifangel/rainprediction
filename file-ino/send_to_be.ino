@@ -118,7 +118,7 @@ void loop() {
   }
   client.loop();
 
-  digitalWrite(LED_PIN, led_state);
+  digitalWrite(LED_PIN, ledState);
 
   long now = millis();
   if (now - lastMsg > 5000) {
@@ -146,7 +146,11 @@ void loop() {
     Serial.print(pres);
     Serial.println(" Pa");
 
-    sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal);
+    if (ledState == LOW) {
+      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal, 1);
+    } else {
+      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal, 0);
+    }
 
     Serial.println(payload);
     client.publish(topic, payload);

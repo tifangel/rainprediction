@@ -66,8 +66,12 @@ exports.updateStatusRoof = async(req,res, callback) => {
             if(err) {
                 res.status(404).send({message: "Update status roof failed"});
             } else {
-                res.status(201).send({data: result, message: "Update status roof successful"});
-                callback();
+                try{
+                    callback();
+                    res.status(201).send({message: "Update status roof successful"});
+                } catch(err) {
+                    res.status(404).send({message: "Update status roof failed"});
+                }
             }
         });
     } catch(err) {
@@ -125,9 +129,15 @@ exports.insertPayload = async(req) => {
     
         const record = await payload.save();
 
-        !record && console.log("Not Created");
+        !record ? console.log("Not Created") : console.log("Has been created");
 
-        console.log("Has been created");
+        Roof.updateMany({}, { status: req.status === 0 ? 'close': 'open' }, function(err, result) {
+            if(err) {
+                console.log("Update status roof failed");
+            } else {
+                console.log("Update status roof successful");
+            }
+        });
     } catch(err) {
         console.log("Error");
     }
