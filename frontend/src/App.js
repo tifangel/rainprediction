@@ -45,7 +45,7 @@ const App = () => {
           const lastData = data?.data[dataLength - 1];
           
           setDatalast({
-            pressure: lastData?.pressure,
+            pressure: lastData?.pressure / 1000,
             humidity: lastData?.humidity,
             temperature: lastData?.temperature,
             israin: lastData?.rainDigital === 0 ? 'Ya' : 'Tidak',
@@ -58,7 +58,7 @@ const App = () => {
           data?.data?.forEach((element, index) => {
             data_press.push({
                 name: element.date,
-                pv: element.pressure,
+                pv: element.pressure / 1000,
             });
             data_hum.push({
               name: element.date,

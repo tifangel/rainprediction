@@ -25,7 +25,6 @@ const int BROKER_PORT = 1883;
 // 3. TOPIC
 const char* topic = "rain";
 const char* TOPIC_SWITCH = "roof";
-const char* TOPIC_SWITCH_LED = "led";
 
 // MISC
 long lastMsg = 0;
@@ -84,7 +83,7 @@ void mqttCallback(char* topic, byte* message, unsigned int length) {
   }
   Serial.println(messageTemp);
   
-  if (String(topic) == TOPIC_SWITCH_LED) {
+  if (String(topic) == TOPIC_SWITCH) {
     Serial.print("Changing output to ");
     if(messageTemp == "{\"message\":\"on\"}"){
       Serial.println("on");
@@ -94,17 +93,6 @@ void mqttCallback(char* topic, byte* message, unsigned int length) {
       Serial.println("off");
       ledState = LOW;
     }
-  }
-  if (String(topic) == TOPIC_SWITCH) {
-    // Serial.print("Changing output to ");
-    // if(messageTemp == "{\"message\":\"on\"}"){
-    //   Serial.println("on");
-    //   ledState = HIGH;
-    // }
-    // else if(messageTemp == "{\"message\":\"off\"}"){
-    //   Serial.println("off");
-    //   ledState = LOW;
-    // }
   }
 }
 

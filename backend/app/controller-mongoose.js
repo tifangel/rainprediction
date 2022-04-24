@@ -1,6 +1,8 @@
 const Payload = require('./model-mongoose');
 const Roof = require('./model-roof');
 const axios = require('axios');
+const fs = require('fs');
+const csv = require('@fast-csv/parse');
 
 exports.getAll = (req,res) =>  {
 	Payload.find({city: req.params.city}, function(err, result){
@@ -83,21 +85,32 @@ exports.getStatusRoof = async(req,res) => {
     });
 };
 
+convertDatetoString = (textDate) => {
+    let date_ob;
+    if (textDate) {
+        date_ob = new Date(textDate);
+    } else {
+        date_ob = new Date();
+    }
+
+    let date = ("0" + date_ob.getDate()).slice(-2);
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    let year = date_ob.getFullYear();
+
+    let hours = date_ob.getHours();
+    let minutes = date_ob.getMinutes();
+    let seconds = date_ob.getSeconds();
+
+    const currDate = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+
+    return currDate;
+}
+
 exports.insertPayload = async(req) => {
 	try{
         //mosquitto_pub -h "192.168.217.71" -p 1883 -t rain -m "{\"humidity\": 80, \"temperature\": 25, \"pressure\": 75365, \"rainAnalog\": 3724, \"rainDigital\": 0}"
-        let date_ob = new Date();
-
-        let date = ("0" + date_ob.getDate()).slice(-2);
-        let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-        let year = date_ob.getFullYear();
-
-        let hours = date_ob.getHours();
-        let minutes = date_ob.getMinutes();
-        let seconds = date_ob.getSeconds();
-
-        const currDate = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-        console.log(currDate);
+        const currDate = convertDatetoString();
+        
         const payload = new Payload(
             {
                 date: currDate,
@@ -119,3 +132,43 @@ exports.insertPayload = async(req) => {
         console.log("Error");
     }
 };
+
+exports.readDatacsv = async(req, res) => {
+    const stream = fs.createReadStream('../data/Malang-19-04.csv');
+    var data = [];
+    csv.parseStream(stream, {delimiter: ",", headers: true})
+        .on('error', error => {
+            console.error(error);
+            res.status(404).send({message: "Failed Read csv"});
+        })
+        // .on('data', row => console.log(`ROW=${JSON.stringify(row)}`))
+        .on('data', row => {
+            const currDate = convertDatetoString(row['timestamp']);
+            data.push({
+                date: currDate,
+                humidity: Number(row['humidity']),
+                temperature: Number(row['temperature']),
+                pressure: Number(row['pressure']),
+                rainAnalog: Number(row['rainAnalog']),
+                rainDigital: Number(row['rainDigital']),
+                city: "malang"
+            });
+        })
+        .on('end', rowCount => {
+            console.log(`Parsed ${rowCount} rows`);
+            // res.status(200).send({data: data, message: "Read csv"});
+            try{
+                data.forEach((value) => {
+                    const payload = new Payload(value);
+                
+                    payload.save();
+                });
+        
+                console.log("Has been created");
+                res.status(200).send({data: data, message: "Read csv"});
+            } catch(err) {
+                console.log("Error");
+                res.status(404).send({message: "Failed Read csv"});
+            }
+        });
+}

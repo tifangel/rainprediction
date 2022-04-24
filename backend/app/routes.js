@@ -55,7 +55,8 @@ module.exports = app => {
             client.publish('root', JSON.stringify({
                 message: req.body.status
             }));
-        })
+        });
     }); 
     app.get("/get-status-roof/:city", record.getStatusRoof); 
+    app.get("/parse-csv", record.readDatacsv);
 };
