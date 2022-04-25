@@ -1,10 +1,17 @@
-import { FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select } from "@material-ui/core";
+import { FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, Typography } from "@material-ui/core";
+import { withStyles } from "@material-ui/styles";
 import React, { useState } from "react";
 import CardNumber from "./CardNumber";
 import Header from "./Header";
 
 export default function Controls({city, handleCityChange, data}) {
-    const [roofStatus, setRoofStatus] = useState("close")
+    const [roofStatus, setRoofStatus] = useState("close");
+
+    const GreyText = withStyles({
+        root: {
+            color: "#0000008A"
+        }
+    })(Typography);
 
     const handleRoofChange = (event) => {
         setRoofStatus(event.target.value);
@@ -13,7 +20,7 @@ export default function Controls({city, handleCityChange, data}) {
 
     const renderForm = () => {
         return (
-            <div className="flex gap-8 sm:self-start">
+            <div className="flex gap-8 sm:self-start md:self-end">
                 <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }} >
                     <InputLabel id="city-label">Ganti Kota</InputLabel>
                     <Select
@@ -42,14 +49,20 @@ export default function Controls({city, handleCityChange, data}) {
     return (
         <>
             <Header city={city} />
-            <div className="flex mb-4 gap-4 justify-between items-center sm:flex-col md:flex-col lg:flex-row">
+            <div className="flex mb-4 gap-4 justify-between sm:flex-col md:flex-col lg:flex-row">
                 { renderForm() }
-                <div className="flex items-center gap-4">
-                    <CardNumber label="Tekanan Udara (kPa)" value={data?.pressure} />
-                    <CardNumber label="Kelembaban (%)" value={data?.humidity} />
-                    <CardNumber label="Suhu (°C)" value={data?.temperature} />
-                    <CardNumber label="Sedang Hujan?" value={data?.israin} />
-                    <CardNumber label="Nanti Hujan?" value={data?.prediction} />
+                <div>
+                    <GreyText variant="body1" gutterBottom>
+                        Data Terbaru
+                    </GreyText>
+                    <div className="flex items-center gap-4">
+                        <CardNumber label="Tekanan Udara (kPa)" value={data?.pressure} />
+                        <CardNumber label="Kelembaban (%)" value={data?.humidity} />
+                        <CardNumber label="Suhu (°C)" value={data?.temperature} />
+                        <CardNumber label="Sedang Hujan?" value={data?.israin} />
+                        <CardNumber label="Nanti Hujan?" value={data?.prediction} />
+                    </div>
+
                 </div>
             </div>
         </>

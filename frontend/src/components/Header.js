@@ -9,7 +9,8 @@ export default function Header(props) {
 
     const createDateString = () => {
         var newDate = new Date();
-        return `${newDate.getDate()} ${months[newDate.getMonth()]} ${newDate.getFullYear()} ${newDate.getHours()}:${String(newDate.getMinutes()).padStart(2, '0')} WIB`
+        return `${newDate.getDate()} ${months[newDate.getMonth()]} ${newDate.getFullYear()} \ 
+            ${String(newDate.getHours()).padStart(2, '0')}:${String(newDate.getMinutes()).padStart(2, '0')} WIB`
     }
 
     useEffect(() => {
@@ -23,7 +24,7 @@ export default function Header(props) {
     return (
         <div className="flex flex-col mb-12 justify-center items-center">
                 <Typography variant="h2">
-                    {city}
+                    {city[0].toUpperCase() + city.substring(1)}
                 </Typography>
                 <Typography variant="overline">
                     {currentTime}

@@ -31,6 +31,7 @@ const App = () => {
       const data = await res.json();
       return data;
     }, {
+      refetchInterval: 10 * 60 * 1000,
       onSuccess: (data) => {
         console.log(data);
         if (data?.data?.length > 0) {
