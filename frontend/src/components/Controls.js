@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import CardNumber from "./CardNumber";
 import Header from "./Header";
 
-export default function Controls({city, handleCityChange, data}) {
-    const [roofStatus, setRoofStatus] = useState("close");
+export default function Controls({city, handleCityChange, handleRoofChange, data, roofStatus}) {
+    // const [roofStatus, setRoofStatus] = useState(roofStatusVar);
 
     const GreyText = withStyles({
         root: {
@@ -13,11 +13,11 @@ export default function Controls({city, handleCityChange, data}) {
         }
     })(Typography);
 
-    const handleRoofChange = (event) => {
-        setRoofStatus(event.target.value);
-        console.log(`Roof is now ${event.target.value}`)
-    }
-
+    // const handleRoofChange = (event) => {
+    //     setRoofStatus(event.target.value);
+    //     console.log(`Roof is now ${event.target.value}`)
+    // }
+    
     const renderForm = () => {
         return (
             <div className="flex gap-8 sm:self-start md:self-end">
@@ -37,7 +37,7 @@ export default function Controls({city, handleCityChange, data}) {
 
                 <FormControl component="fieldset">
                     <FormLabel component="legend">Status Rumah</FormLabel>
-                    <RadioGroup row name="status-atap" defaultValue={roofStatus} onChange={handleRoofChange}>
+                    <RadioGroup row name="status-atap" value={roofStatus} onChange={handleRoofChange}>
                         <FormControlLabel value="close" control={<Radio color="primary" />} label="Tertutup" />
                         <FormControlLabel value="open" control={<Radio color="primary" />} label="Terbuka" />
                     </RadioGroup>

@@ -34,9 +34,10 @@ module.exports = app => {
             temperature: payload.temperature,
             pressure: payload.pressure,
             rainAnalog: payload.rainAnalog,
-            rainDigital: payload.rainDigital
+            rainDigital: payload.rainDigital,
+            roof: payload.roof
         }
-        record.insertPayload(data);
+        record.insertPayload(payload);
     });
     
     client.on('error', (err) => {
@@ -49,5 +50,14 @@ module.exports = app => {
     });
   
     app.get("/get-data/:city", record.getAll);
-    app.post("/add-data", record.insertData); 
+    app.post("/add-data", record.insertData);
+    app.put("/update-status-roof/:city", async(req, res) => {
+        await record.updateStatusRoof(req, res, () => {
+            client.publish('root', JSON.stringify({
+                message: req.body.status === 'close' ? 'on' : 'off'
+            }));
+        });
+    }); 
+    app.get("/get-status-roof/:city", record.getStatusRoof); 
+    app.get("/parse-csv", record.readDatacsv);
 };

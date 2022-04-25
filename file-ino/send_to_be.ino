@@ -6,6 +6,7 @@
 #define DHT11PIN 25
 #define rainAnalog 34
 #define rainDigital 35
+#define LED_PIN 18
 
 DHT dht(DHT11PIN, DHT11);
 Adafruit_BMP085 bmp;
@@ -23,14 +24,15 @@ const int BROKER_PORT = 1883;
 
 // 3. TOPIC
 const char* topic = "rain";
-//const char* TOPIC_SWITCH = "";
-
+const char* TOPIC_SWITCH = "roof";
 
 // MISC
 long lastMsg = 0;
 
 // PAYLOAD 
 char payload[512];
+
+int ledState = LOW; 
 
 void setup() {
   Serial.begin(115200);
@@ -47,6 +49,7 @@ void setup() {
   }
   pinMode(rainDigital,INPUT);
   pinMode(rainAnalog, INPUT);
+  pinMode(LED_PIN, OUTPUT); 
 }
 
 void setupWifi() {
@@ -79,18 +82,18 @@ void mqttCallback(char* topic, byte* message, unsigned int length) {
     messageTemp += (char)message[i];
   }
   Serial.println(messageTemp);
-  /*
+  
   if (String(topic) == TOPIC_SWITCH) {
     Serial.print("Changing output to ");
-    if(messageTemp == "{\"payload\":{\"message\":\"on\"}}"){
+    if(messageTemp == "{\"message\":\"on\"}"){
       Serial.println("on");
       ledState = HIGH;
     }
-    else if(messageTemp == "{\"payload\":{\"message\":\"off\"}}"){
+    else if(messageTemp == "{\"message\":\"off\"}"){
       Serial.println("off");
       ledState = LOW;
     }
-  }*/
+  }
 }
 
 void reconnect() {
@@ -98,7 +101,7 @@ void reconnect() {
     if (client.connect("esp32client")) {
       Serial.println("connected");
       // Subscribe
-//      client.subscribe(TOPIC_SWITCH);
+     client.subscribe(TOPIC_SWITCH);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -114,6 +117,8 @@ void loop() {
     reconnect();
   }
   client.loop();
+
+  digitalWrite(LED_PIN, ledState);
 
   long now = millis();
   if (now - lastMsg > 5000) {
@@ -141,7 +146,11 @@ void loop() {
     Serial.print(pres);
     Serial.println(" Pa");
 
-    sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal);
+    if (ledState == LOW) {
+      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal, 1);
+    } else {
+      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal, 0);
+    }
 
     Serial.println(payload);
     client.publish(topic, payload);
