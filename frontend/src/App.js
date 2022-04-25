@@ -7,7 +7,7 @@ import Controls from './components/Controls';
 const App = () => {
 
   const [city, setCity] = useState('bandung');
-  const [roofStatus, setRoofStatus] = useState('open');
+  const [roofStatus, setRoofStatus] = useState('-');
   const [datalast, setDatalast] = useState({
     pressure: 0,
     humidity: 0,
@@ -30,11 +30,11 @@ const App = () => {
     console.log(`Roof is now ${event.target.value}`);
   }
 
-  useEffect(() => {
-    if (datalast.prediction === 'Ya' && roofStatus === 'open'){
-      handleUpdateStatus.mutate('close');
-    }
-  }, [datalast.prediction, roofStatus])
+  // useEffect(() => {
+  //   if (datalast.prediction === 'Ya' && roofStatus === 'open'){
+  //     handleUpdateStatus.mutate('close');
+  //   }
+  // }, [datalast.prediction, roofStatus])
 
   useQuery(
     ['data_payload', city],
