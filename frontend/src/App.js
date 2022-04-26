@@ -145,11 +145,6 @@ const App = () => {
     }, {
         onSuccess: () => {
             alert("Berhasil update status atap");
-            
-            var title = "Pelindung Hujan";
-            var icon = '%PUBLIC_URL%/logo.png';
-            var body = "Hujan akan berhenti dalam 10 menit. Atap rumah akan dibuka.";
-            var notification = new Notification(title, { body, icon });
         },
         onError: (err) => {
             alert("Tidak berhasil update status atap");
