@@ -19,7 +19,7 @@ export default function GraphTest({data = []}) {
             <XAxis dataKey="name" />
             <YAxis domain={['auto', 'auto']}/>
             <Tooltip />
-            <Line strokeWidth={1.25} type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} dot={false}/>
+            <Line strokeWidth={1.25} type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} dot={false}/>
           </LineChart>
         </ResponsiveContainer>
     );
