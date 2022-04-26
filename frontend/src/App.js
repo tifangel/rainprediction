@@ -9,7 +9,7 @@ const months = [ 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
 const App = () => {
 
   const [city, setCity] = useState('bandung');
-  const [roofStatus, setRoofStatus] = useState('open');
+  const [roofStatus, setRoofStatus] = useState('-');
   const [datalast, setDatalast] = useState({
     pressure: 0,
     humidity: 0,

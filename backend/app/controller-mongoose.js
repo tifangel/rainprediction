@@ -21,19 +21,28 @@ exports.getAll = (req,res) =>  {
                     .then(response => {
                         if (response?.data?.statusCode === 200) {
                             prediction = response?.data?.body ? 0 : 1;
+                            Roof.findOne({ city: req.params.city }, function(err, resultRoof){
+                                if(!err) {
+                                    res.status(200).send({data: result, prediction: prediction, statusroof: resultRoof.status, success: true, message: "Berhasil mengambil data"});
+                                } else {
+                                    res.status(200).send({data: result, prediction: prediction, statusroof: -1, success: true, message: "Berhasil mengambil data"});
+                                }
+                            });
                         } 
                     })
                     .catch(error => {
                         console.log(error);
+                        res.status(200).send({data: result, prediction: prediction, statusroof: -1, success: true, message: "Berhasil mengambil data"});
                     });
+            } else {
+                Roof.findOne({ city: req.params.city }, function(err, resultRoof){
+                    if(!err) {
+                        res.status(200).send({data: result, prediction: prediction, statusroof: resultRoof.status, success: true, message: "Berhasil mengambil data"});
+                    } else {
+                        res.status(200).send({data: result, prediction: prediction, statusroof: -1, success: true, message: "Berhasil mengambil data"});
+                    }
+                });
             }
-            Roof.findOne({ city: req.params.city }, function(err, resultRoof){
-                if(!err) {
-                    res.status(200).send({data: result, prediction: prediction, statusroof: resultRoof.status, success: true, message: "Berhasil mengambil data"});
-                } else {
-                    res.status(200).send({data: result, prediction: prediction, statusroof: -1, success: true, message: "Berhasil mengambil data"});
-                }
-            });
         }
     })
 };
@@ -112,7 +121,7 @@ convertDatetoString = (textDate) => {
 
 exports.insertPayload = async(req) => {
 	try{
-        //mosquitto_pub -h "192.168.217.71" -p 1883 -t rain -m "{\"humidity\": 80, \"temperature\": 25, \"pressure\": 75365, \"rainAnalog\": 3724, \"rainDigital\": 0}"
+        //mosquitto_pub -h "192.168.217.71" -p 1883 -t rain -m "{\"humidity\": 80, \"temperature\": 25, \"pressure\": 75365, \"rainAnalog\": 3724, \"rainDigital\": 0, \"roof\": \"close\", \"city\":\"malang\"}"
         const currDate = convertDatetoString();
         
         const payload = new Payload(
@@ -123,15 +132,14 @@ exports.insertPayload = async(req) => {
                 pressure: req.pressure,
                 rainAnalog: req.rainAnalog,
                 rainDigital: req.rainDigital,
-                city: "malang" //huruf kecil semua yaa
+                city: req.city
             }
         );
-    
-        const record = await payload.save();
 
+        const record = await payload.save();
         !record ? console.log("Not Created") : console.log("Has been created");
 
-        Roof.updateMany({}, { status: req.status === 0 ? 'close': 'open' }, function(err, result) {
+        Roof.updateOne({ city: req.city }, { status: req.roof }, function(err, result) {
             if(err) {
                 console.log("Update status roof failed");
             } else {

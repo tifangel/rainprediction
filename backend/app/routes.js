@@ -28,15 +28,6 @@ module.exports = app => {
     
     client.on("message", (topic, message, packet) => {
         const payload = JSON.parse(new TextDecoder("utf-8").decode(message));
-        console.log(payload);
-        const data = {
-            humidity: payload.humidity,
-            temperature: payload.temperature,
-            pressure: payload.pressure,
-            rainAnalog: payload.rainAnalog,
-            rainDigital: payload.rainDigital,
-            roof: payload.roof
-        }
         record.insertPayload(payload);
     });
     
@@ -53,7 +44,7 @@ module.exports = app => {
     app.post("/add-data", record.insertData);
     app.put("/update-status-roof/:city", async(req, res) => {
         await record.updateStatusRoof(req, res, () => {
-            client.publish('root', JSON.stringify({
+            client.publish('roof', JSON.stringify({
                 message: req.body.status === 'close' ? 'on' : 'off'
             }));
         });

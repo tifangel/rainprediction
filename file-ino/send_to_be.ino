@@ -6,7 +6,7 @@
 #define DHT11PIN 25
 #define rainAnalog 34
 #define rainDigital 35
-#define LED_PIN 18
+#define LED_PIN 5
 
 DHT dht(DHT11PIN, DHT11);
 Adafruit_BMP085 bmp;
@@ -25,6 +25,7 @@ const int BROKER_PORT = 1883;
 // 3. TOPIC
 const char* topic = "rain";
 const char* TOPIC_SWITCH = "roof";
+
 
 // MISC
 long lastMsg = 0;
@@ -49,7 +50,7 @@ void setup() {
   }
   pinMode(rainDigital,INPUT);
   pinMode(rainAnalog, INPUT);
-  pinMode(LED_PIN, OUTPUT); 
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void setupWifi() {
@@ -85,6 +86,7 @@ void mqttCallback(char* topic, byte* message, unsigned int length) {
   
   if (String(topic) == TOPIC_SWITCH) {
     Serial.print("Changing output to ");
+    Serial.println(messageTemp);
     if(messageTemp == "{\"message\":\"on\"}"){
       Serial.println("on");
       ledState = HIGH;
@@ -101,7 +103,7 @@ void reconnect() {
     if (client.connect("esp32client")) {
       Serial.println("connected");
       // Subscribe
-     client.subscribe(TOPIC_SWITCH);
+      client.subscribe(TOPIC_SWITCH);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -129,29 +131,15 @@ void loop() {
     float humi = dht.readHumidity();
     float temp = dht.readTemperature();
     float pres = bmp.readPressure();
-    //float pres = 22;
-    
-    Serial.print("Temperature: ");
-    Serial.print(temp);
-    Serial.print("ºC ");
-    Serial.print("Humidity: ");
-    Serial.println(humi);
-  
-    Serial.print(" Analog: ");
-    Serial.print(rainAnalogVal);
-    Serial.print(" Digital: ");
-    Serial.println(rainDigitalVal);
-  
-    Serial.print("Pressure = ");
-    Serial.print(pres);
-    Serial.println(" Pa");
 
     if (ledState == LOW) {
-      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal, 1);
+      Serial.println("LOW");
+      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":\"open\", \"city\":\"malang\"}", humi, temp, pres, rainAnalogVal, rainDigitalVal);
     } else {
-      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":%d}", humi, temp, pres, rainAnalogVal, rainDigitalVal, 0);
+      Serial.println("HIGH");
+      sprintf(payload,"{\"humidity\":%f, \"temperature\":%f, \"pressure\":%f, \"rainAnalog\":%d, \"rainDigital\":%d, \"roof\":\"close\", \"city\":\"malang\"}", humi, temp, pres, rainAnalogVal, rainDigitalVal);
     }
-
+    
     Serial.println(payload);
     client.publish(topic, payload);
   }
