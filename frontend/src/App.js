@@ -10,6 +10,9 @@ const App = () => {
 
   const [city, setCity] = useState('bandung');
   const [roofStatus, setRoofStatus] = useState('-');
+  const [automaticRoof, setAutomaticRoof] = useState("otomatis"); 
+  // Apakah atap akan dibuka tutup otomatis atau manual
+  
   const [datalast, setDatalast] = useState({
     pressure: 0,
     humidity: 0,
@@ -29,6 +32,11 @@ const App = () => {
   const handleRoofChange = (event) => {
     setRoofStatus(event.target.value);
     handleUpdateStatus.mutate(event.target.value);
+  }
+
+  const handleAutomaticRoof = (event) => {
+    setAutomaticRoof(event.target.value);
+    console.log("Automatic roof is " + event.target.value)
   }
 
   const createDateString = (datestring) => {
@@ -52,19 +60,21 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    if (datalast.prediction === 'Ya' && roofStatus === 'open') {
-      handleUpdateStatus.mutate('close');
-
-      var title = "Pelindung Hujan";
-      var body = "Cuaca akan hujan dalam 10 menit. Atap rumah akan ditutup.";
-      var notification = new Notification(title, { body });
-    } 
-    else if (datalast.prediction === 'Tidak' && roofStatus === 'close') {
-      handleUpdateStatus.mutate('open');
-
-      var title = "Pelindung Hujan";
-      var body = "Hujan akan berhenti dalam 10 menit. Atap rumah akan dibuka.";
-      var notification = new Notification(title, { body });
+    if (automaticRoof == "otomatis") {
+      if (datalast.prediction === 'Ya' && roofStatus === 'open') {
+        handleUpdateStatus.mutate('close');
+  
+        var title = "Pelindung Hujan";
+        var body = "Cuaca akan hujan dalam 10 menit. Atap rumah akan ditutup.";
+        var notification = new Notification(title, { body });
+      } 
+      else if (datalast.prediction === 'Tidak' && roofStatus === 'close') {
+        handleUpdateStatus.mutate('open');
+  
+        var title = "Pelindung Hujan";
+        var body = "Hujan akan berhenti dalam 10 menit. Atap rumah akan dibuka.";
+        var notification = new Notification(title, { body });
+      }
     }
   }, [datalast.prediction, roofStatus])
 
@@ -154,7 +164,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <Controls city={city} handleCityChange={handleCityChange} handleRoofChange={handleRoofChange} data={datalast} roofStatus={roofStatus}/>
+      <Controls city={city} handleCityChange={handleCityChange} handleAutomaticRoof={handleAutomaticRoof} handleRoofChange={handleRoofChange} data={datalast} automaticRoof={automaticRoof} roofStatus={roofStatus}/>
       <CardGraph dataPress={dataPress} dataHum={dataHum} dataTemp={dataTemp} />
     </div>
   );

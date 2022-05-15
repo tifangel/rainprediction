@@ -5,8 +5,9 @@ import CardNumber from "./CardNumber";
 import Header from "./Header";
 
 
-export default function Controls({city, handleCityChange, handleRoofChange, data, roofStatus}) {
+export default function Controls({city, handleCityChange, handleRoofChange, handleAutomaticRoof, data, automaticRoof, roofStatus}) {
     const [localRoofStatus, setLocalRoofStatus] = useState(roofStatus);
+    const [localAutomaticRoof, setLocalAutomaticRoof] = useState(automaticRoof);
 
     const GreyText = withStyles({
         root: {
@@ -18,6 +19,11 @@ export default function Controls({city, handleCityChange, handleRoofChange, data
         handleRoofChange(event);
         setLocalRoofStatus(event.target.value);
         console.log(`Roof is now ${event.target.value}`)
+    }
+
+    const localHandleAutomaticRoof = (event) => {
+        handleAutomaticRoof(event);
+        setLocalAutomaticRoof(event.target.value);
     }
     
     const renderForm = () => {
@@ -36,15 +42,20 @@ export default function Controls({city, handleCityChange, handleRoofChange, data
                         <MenuItem value="malang">Malang</MenuItem>
                     </Select>
                 </FormControl>
+                
+                <FormControl component="fieldset">
+                    <FormLabel component="legend">Buka tutup atap secara</FormLabel>
+                    <RadioGroup row name="status-atap" value={localAutomaticRoof} onChange={localHandleAutomaticRoof}>
+                        <FormControlLabel value="otomatis" control={<Radio color="primary" />} label="Otomatis" />
+                        <FormControlLabel value="manual" control={<Radio color="primary" />} label="Manual" />
+                    </RadioGroup>
+                </FormControl>
 
-                {/* <Button variant="outlined" color="primary">
-                    Ganti Status Rumah
-                </Button> */}
                 <FormControl component="fieldset">
                     <FormLabel component="legend">Ganti Status Rumah</FormLabel>
                     <RadioGroup row name="status-atap" value={localRoofStatus} onChange={localHandleRoofChange}>
-                        <FormControlLabel value="close" control={<Radio color="primary" />} label="Tertutup" />
-                        <FormControlLabel value="open" control={<Radio color="primary" />} label="Terbuka" />
+                        <FormControlLabel disabled={localAutomaticRoof == "otomatis"} value="close" control={<Radio color="primary" />} label="Tertutup" />
+                        <FormControlLabel disabled={localAutomaticRoof == "otomatis"} value="open" control={<Radio color="primary" />} label="Terbuka" />
                     </RadioGroup>
                 </FormControl>
             </div>
