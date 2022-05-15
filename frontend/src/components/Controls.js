@@ -9,6 +9,10 @@ export default function Controls({city, handleCityChange, handleRoofChange, hand
     const [localRoofStatus, setLocalRoofStatus] = useState(roofStatus);
     const [localAutomaticRoof, setLocalAutomaticRoof] = useState(automaticRoof);
 
+    useEffect(() => {
+        setLocalRoofStatus(roofStatus);
+    }, [roofStatus]); 
+
     const GreyText = withStyles({
         root: {
             color: "#0000008A"
@@ -54,8 +58,8 @@ export default function Controls({city, handleCityChange, handleRoofChange, hand
                 <FormControl component="fieldset">
                     <FormLabel component="legend">Ganti Status Rumah</FormLabel>
                     <RadioGroup row name="status-atap" value={localRoofStatus} onChange={localHandleRoofChange}>
-                        <FormControlLabel disabled={localAutomaticRoof == "otomatis"} value="close" control={<Radio color="primary" />} label="Tertutup" />
-                        <FormControlLabel disabled={localAutomaticRoof == "otomatis"} value="open" control={<Radio color="primary" />} label="Terbuka" />
+                        <FormControlLabel disabled={localAutomaticRoof === "otomatis"} value="close" control={<Radio color="primary" />} label="Tertutup" />
+                        <FormControlLabel disabled={localAutomaticRoof === "otomatis"} value="open" control={<Radio color="primary" />} label="Terbuka" />
                     </RadioGroup>
                 </FormControl>
             </div>
