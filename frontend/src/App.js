@@ -4,10 +4,15 @@ import { useQuery, useMutation } from 'react-query';
 import CardGraph from "./components/CardGraph";
 import Controls from './components/Controls';
 
+const months = [ 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+
 const App = () => {
 
   const [city, setCity] = useState('bandung');
   const [roofStatus, setRoofStatus] = useState('-');
+  const [automaticRoof, setAutomaticRoof] = useState("otomatis"); 
+  // Apakah atap akan dibuka tutup otomatis atau manual
+  
   const [datalast, setDatalast] = useState({
     pressure: 0,
     humidity: 0,
@@ -27,14 +32,51 @@ const App = () => {
   const handleRoofChange = (event) => {
     setRoofStatus(event.target.value);
     handleUpdateStatus.mutate(event.target.value);
-    console.log(`Roof is now ${event.target.value}`);
   }
 
-  // useEffect(() => {
-  //   if (datalast.prediction === 'Ya' && roofStatus === 'open'){
-  //     handleUpdateStatus.mutate('close');
-  //   }
-  // }, [datalast.prediction, roofStatus])
+  const handleAutomaticRoof = (event) => {
+    setAutomaticRoof(event.target.value);
+    console.log("Automatic roof is " + event.target.value)
+  }
+
+  const createDateString = (datestring) => {
+    var first_part = datestring.split(" ")[0],
+        year  = first_part.split("-")[0],
+        month = parseInt(first_part.split("-")[1]) - 1,
+        day   = first_part.split("-")[2],
+        second_part = datestring.split(" ")[1],
+        hour   = second_part.split(":")[0],
+        minute = second_part.split(":")[1];
+
+    var newDate = new Date(year, month, day, hour, minute);
+    return `${newDate.getDate()} ${months[newDate.getMonth()]} ${newDate.getFullYear()} \ 
+        ${String(newDate.getHours()).padStart(2, '0')}:${String(newDate.getMinutes()).padStart(2, '0')} WIB`
+}
+
+  useEffect(() => {
+    Notification.requestPermission().then(function (permission) {
+      console.log(permission);
+    });
+  }, [])
+
+  useEffect(() => {
+    if (automaticRoof == "otomatis") {
+      if (datalast.prediction === 'Ya' && roofStatus === 'open') {
+        handleUpdateStatus.mutate('close');
+  
+        var title = "Pelindung Hujan";
+        var body = "Cuaca akan hujan dalam 10 menit. Atap rumah akan ditutup.";
+        var notification = new Notification(title, { body });
+      } 
+      else if (datalast.prediction === 'Tidak' && roofStatus === 'close') {
+        handleUpdateStatus.mutate('open');
+  
+        var title = "Pelindung Hujan";
+        var body = "Hujan akan berhenti dalam 10 menit. Atap rumah akan dibuka.";
+        var notification = new Notification(title, { body });
+      }
+    }
+  }, [datalast.prediction, roofStatus])
 
   useQuery(
     ['data_payload', city],
@@ -52,6 +94,7 @@ const App = () => {
           const lastData = data?.data[dataLength - 1];
           
           setDatalast({
+            timestamp: createDateString(lastData?.date),
             pressure: lastData?.pressure / 1000,
             humidity: lastData?.humidity,
             temperature: lastData?.temperature,
@@ -64,16 +107,16 @@ const App = () => {
           const data_temp = [];
           data?.data?.forEach((element, index) => {
             data_press.push({
-                name: element.date,
-                pv: element.pressure / 1000,
+              name: element.date,
+              value: element.pressure / 1000,
             });
             data_hum.push({
               name: element.date,
-              pv: element.humidity,
+              value: element.humidity,
             });
             data_temp.push({
               name: element.date,
-              pv: element.temperature,
+              value: element.temperature,
             });
           });
           setDataPress(data_press);
@@ -82,6 +125,7 @@ const App = () => {
 
         } else {
           setDatalast({
+            timestamp: '-',
             pressure: 0,
             humidity: 0,
             temperature: 0,
@@ -110,17 +154,17 @@ const App = () => {
       return data;
     }, {
         onSuccess: () => {
-            console.log("Berhasil update status atap");
+            alert("Berhasil update status atap");
         },
         onError: (err) => {
-            console.log("Tidak berhasil update status atap");
+            alert("Tidak berhasil update status atap");
         }
     }
   );
 
   return (
     <div className="App">
-      <Controls city={city} handleCityChange={handleCityChange} handleRoofChange={handleRoofChange} data={datalast} roofStatus={roofStatus}/>
+      <Controls city={city} handleCityChange={handleCityChange} handleAutomaticRoof={handleAutomaticRoof} handleRoofChange={handleRoofChange} data={datalast} automaticRoof={automaticRoof} roofStatus={roofStatus}/>
       <CardGraph dataPress={dataPress} dataHum={dataHum} dataTemp={dataTemp} />
     </div>
   );
