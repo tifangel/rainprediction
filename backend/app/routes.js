@@ -12,7 +12,7 @@ module.exports = app => {
         rejectUnauthorized: false,
     };
 
-    const url = 'ws://192.168.217.71:8080/mqtt';
+    const url = 'ws://192.168.0.113:8080/mqtt';
     const client = mqtt.connect(url, options);
     
     const topic = "rain"
@@ -20,6 +20,11 @@ module.exports = app => {
     client.on('connect', () => {
         console.log('Connected');
         client.subscribe(topic, (err, granted) => {
+            if (err) {
+            console.log("Subscription request failed");
+            }
+        });
+        client.subscribe("rain2", (err, granted) => {
             if (err) {
             console.log("Subscription request failed");
             }
